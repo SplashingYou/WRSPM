@@ -1,19 +1,60 @@
 package com.example.mealup;
 
+import com.google.api.core.ApiFuture;
+import com.google.cloud.firestore.DocumentReference;
+import com.google.cloud.firestore.WriteResult;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
+import javafx.scene.text.Text;
 import javafx.util.StringConverter;
 
+import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CreateNewAccountController implements Initializable {
 
-    private static boolean isValidPassword(String password)
+    @FXML
+    private TextField username_signup_TextField;
+
+    @FXML
+    private TextField password_signup_TextField;
+    @FXML
+    private TextField firstname_signup_TextField;
+
+    @FXML
+    private TextField age_signup_TextField;
+
+    @FXML
+    private TextField lastname_signup_TextField;
+
+
+    private boolean isValidUsername(String username){
+        String regex = "^[A-Za-z][A-Za-z0-9_]{7,29}$";
+        Pattern p = Pattern.compile(regex);
+
+        if(username == null){
+            return false;
+
+        }
+
+        Matcher m = p.matcher(username);
+
+        return m.matches();
+
+
+    }
+
+
+
+    private boolean isValidPassword(String password)
     {
 
         // Regex to check valid password.
@@ -47,15 +88,6 @@ public class CreateNewAccountController implements Initializable {
     @FXML
     private Slider exerciseLevelSlider;
 
-    @FXML
-    public void setExcerciseSlider(){
-        exerciseLevelSlider.setMax(3);
-        exerciseLevelSlider.setMin(0);
-        exerciseLevelSlider.setValue(1);
-
-
-
-    }
 
 
     @Override
@@ -100,6 +132,38 @@ public class CreateNewAccountController implements Initializable {
 
 
             }
+
+
+
+    public void addData() {
+
+        DocumentReference docRef = HelloApplication.fstore.collection("User Accounts").document(username_signup_TextField.getText() + " " + password_signup_TextField.getText());
+        // Add document data  with id "alovelace" using a hashmap
+        Map<String, String> data = new HashMap<>();
+        data.put("Username", username_signup_TextField.getText().trim());
+        data.put("Password", password_signup_TextField.getText());
+        //asynchronously write data
+        ApiFuture<WriteResult> result = docRef.set(data);
+    }
+
+
+    @FXML
+    private void handleCreateAccountButton() throws IOException {
+        User user = new User();
+        user.setFirstName(firstname_signup_TextField.getText());
+        user.setLastName(lastname_signup_TextField.getText());
+        user.setUsername(username_signup_TextField.getText());
+        user.setPassword(password_signup_TextField.getText());
+        user.setAge(Integer.parseInt(age_signup_TextField.getText()));
+        addData();
+        HelloApplication.setRoot("main-app");
+
+
+
+
+    }
+
+
 
 
         }

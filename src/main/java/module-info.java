@@ -9,6 +9,8 @@ module com.example.mealup {
     requires com.google.api.apicommon;
     requires com.google.auth;
     requires google.cloud.core;
+    requires java.sql;
+    requires json.simple;
 
 
     opens com.example.mealup to javafx.fxml;
